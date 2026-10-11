@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>تحدي الذكاء</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#fff;min-height:100vh;padding:20px}
+.hid{display:none}
+.screen{max-width:500px;margin:0 auto;text-align:center}
+h1{color:#ffd93d;font-size:26px;margin-bottom:15px}
+.bigIcon{font-size:80px;margin:15px 0}
+.bar{display:flex;justify-content:space-between;background:rgba(0,0,0,.5);padding:10px 15px;border-radius:12px;margin-bottom:12px}
+.s{text-align:center;font-size:11px;color:#aaa}
+.s b{display:block;font-size:17px;color:#ffd93d;margin-top:3px}
+.rankD{background:#16213e;padding:15px;border-radius:12px;margin:10px 0;font-size:22px;font-weight:bold}
+.q{background:rgba(30,30,60,.9);padding:20px;border-radius:16px;margin-bottom:10px;min-height:100px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:18px;font-weight:bold;border:2px solid #a855f7}
+.timer{background:rgba(0,0,0,.5);height:12px;border-radius:10px;overflow:hidden;margin-bottom:15px}
+.tf{background:linear-gradient(90deg,#2ecc71,#f9d423,#ee5253);height:100%;width:100%}
+button{display:block;width:100%;padding:15px;font-size:16px;border-radius:12px;border:2px solid rgba(255,255,255,.2);background:rgba(30,30,60,.9);color:#fff;font-weight:bold;font-family:inherit;margin-bottom:10px;text-align:right;cursor:pointer}
+button.c{background:#2ecc71;border-color:#fff}
+button.w{background:#e74c3c;border-color:#fff}
+button:disabled{opacity:.7}
+.msg{text-align:center;font-size:17px;font-weight:bold;min-height:26px;margin:12px 0;color:#ffd93d}
+.btn{padding:18px 25px;font-size:18px;border-radius:14px;border:none;background:linear-gradient(135deg,#4ecdc4,#44a08d);color:#fff;font-weight:bold;margin:10px auto;display:block;width:100%;max-width:320px;text-align:center;cursor:pointer}
+.btn.p{background:linear-gradient(135deg,#a855f7,#6366f1)}
+.btn.g{background:linear-gradient(135deg,#f9d423,#ff4e50)}
+.res{background:rgba(30,30,60,.9);padding:18px;border-radius:15px;margin:12px auto}
+.rr{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #333}
+.rr:last-child{border:none}
+.rb{text-align:center;padding:25px;margin:15px 0;border-radius:18px}
+.ri{font-size:70px;margin-bottom:10px}
+.rn{font-size:28px;font-weight:bold;margin-bottom:8px}
+.rk{display:flex;justify-content:space-between;align-items:center;padding:12px 15px;background:rgba(30,30,60,.9);border-radius:12px;margin-bottom:8px;font-size:14px}
+.rk.f{border:2px solid #f9d423}
+.rk.m{border:2px solid #4ecdc4}
+.bronze{background:linear-gradient(135deg,#cd7f32,#8b4513)}
+.silver{background:linear-gradient(135deg,#c0c0c0,#808080)}
+.gold{background:linear-gradient(135deg,#f9d423,#d4a017)}
+.diamond{background:linear-gradient(135deg,#4ecdc4,#1e90ff)}
+.legend{background:linear-gradient(135deg,#a855f7,#6c3483)}
+.supreme{background:linear-gradient(135deg,#00bfff,#0066cc)}
+.bar2{background:linear-gradient(135deg,#ff69b4,#c71585)}
+.conq{background:linear-gradient(135deg,#ff4e50,#8b0000)}
+.winAnim{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;pointer-events:none}
+.winCircle{width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(46,204,113,.95),transparent);display:flex;align-items:center;justify-content:center;font-size:90px;animation:popIn .6s}
+@keyframes popIn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}
+.winTxt{font-size:44px;font-weight:900;color:#2ecc71;text-shadow:0 0 30px #2ecc71;margin-top:20px}
+.conf{position:fixed;font-size:30px;animation:fallD 2.5s linear forwards;pointer-events:none;z-index:9998}
+@keyframes fallD{0%{top:-50px;transform:rotate(0);opacity:1}100%{top:100vh;transform:rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<div id="screen-home" class="screen">
+<h1>🧠 تحدي الذكاء</h1>
+<div class="bigIcon">🎯</div>
+<div class="rankD" id="rankHome">🥉 برونز • 0 نقطة</div>
+<button class="btn" onclick="start()">🚀 ابدأ المباراة</button>
+<button class="btn p" onclick="showRank()">🏆 التصنيف</button>
+<button class="btn g" onclick="showRanksList()">🎖️ الرتب</button>
+</div>
+
+<div id="screen-game" class="screen hid">
+<div class="bar">
+<div class="s">🎯<b id="qn">1/15</b></div>
+<div class="s">✅<b id="sc">0</b></div>
+<div class="s">⏱️<b id="tm">10</b></div>
+</div>
+<div class="q" id="q">-</div>
+<div class="timer"><div class="tf" id="tf"></div></div>
+<div id="a"></div>
+<div class="msg" id="m"></div>
+</div>
+
+<div id="screen-result" class="screen hid">
+<h1 id="rt">🎉</h1>
+<div class="res">
+<div class="rr"><span>✅ صح</span><b id="rc">0</b></div>
+<div class="rr"><span>❌ غلط</span><b id="rw">0</b></div>
+<div class="rr"><span>🎯 النتيجة</span><b id="rres">-</b></div>
+<div class="rr"><span>🏆 نقاط الجولة</span><b id="rs" style="color:#ffd93d">0</b></div>
+<div class="rr"><span>📊 المجموع</span><b id="rt2" style="color:#4ecdc4">0</b></div>
+</div>
+<div class="rb bronze" id="rb">
+<div class="ri" id="ri">🥉</div>
+<div class="rn" id="rn">برونز</div>
+</div>
+<button class="btn p" onclick="start()">🔄 جولة جديدة</button>
+<button class="btn g" onclick="goHome()">🏠 الرئيسية</button>
+</div>
+
+<div id="screen-rank" class="screen hid">
+<h1>🏆 التصنيف</h1>
+<div id="rkl"></div>
+<br>
+<button class="btn g" onclick="goHome()">🏠 الرئيسية</button>
+</div>
+
+<div id="screen-ranks" class="screen hid">
+<h1>🎖️ الرتب</h1>
+<p style="color:#aaa;font-size:14px;margin-bottom:15px;">كل 500 نقطة = ترقية رتبة</p>
+<div id="ranksList"></div>
+<br>
+<button class="btn g" onclick="goHome()">🏠 الرئيسية</button>
+</div<script>
+var qs=[
+{q:'عاصمة مصر؟',a:['القاهرة','الإسكندرية','الجيزة','أسوان'],c:0},
+{q:'7 × 8 = ؟',a:['54','56','48','64'],c:1},
+{q:'عاصمة السعودية؟',a:['جدة','مكة','الرياض','الدمام'],c:2},
+{q:'أكبر كوكب؟',a:['الأرض','زحل','المريخ','المشتري'],c:3},
+{q:'عاصمة فرنسا؟',a:['باريس','ليون','مرسيليا','نيس'],c:0},
+{q:'12 + 15 = ؟',a:['25','27','29','30'],c:1},
+{q:'عاصمة اليابان؟',a:['أوساكا','كيوتو','طوكيو','ناجويا'],c:2},
+{q:'لاعبي كرة القدم؟',a:['9','10','12','11'],c:3},
+{q:'عاصمة ألمانيا؟',a:['برلين','ميونخ','هامبورج','فرانكفورت'],c:0},
+{q:'رسم الموناليزا؟',a:['فان جوخ','دافنشي','بيكاسو','مايكل أنجلو'],c:1},
+{q:'عاصمة إيطاليا؟',a:['ميلانو','نابولي','روما','تورينو'],c:2},
+{q:'100 - 37 = ؟',a:['63','67','73','53'],c:0},
+{q:'أكبر محيط؟',a:['الأطلسي','الهندي','المتجمد','الهادي'],c:3},
+{q:'عاصمة إسبانيا؟',a:['مدريد','برشلونة','فالنسيا','إشبيلية'],c:0},
+{q:'ألوان قوس قزح؟',a:['5','7','6','8'],c:1},
+{q:'عاصمة الصين؟',a:['شنغهاي','هونج كونج','بكين','تيانجين'],c:2},
+{q:'أسرع حيوان بري؟',a:['الأسد','النمر','الحصان','الفهد'],c:3},
+{q:'عاصمة إنجلترا؟',a:['لندن','مانشستر','ليفربول','برمنجهام'],c:0},
+{q:'9 × 9 = ؟',a:['72','81','99','90'],c:1},
+{q:'عاصمة تركيا؟',a:['إسطنبول','إزمير','أنقرة','بورصة'],c:2},
+{q:'أكبر حيوان؟',a:['الفيل','الزرافة','الحوت الأزرق','القرش'],c:2},
+{q:'عاصمة الإمارات؟',a:['أبوظبي','دبي','الشارقة','عجمان'],c:0},
+{q:'أيام السنة؟',a:['360','365','370','350'],c:1},
+{q:'عاصمة المغرب؟',a:['الدار البيضاء','فاس','الرباط','مراكش'],c:2},
+{q:'اخترع المصباح؟',a:['أينشتاين','إديسون','نيوتن','جراهام بيل'],c:1},
+{q:'عدد الكواكب؟',a:['7','9','8','10'],c:2},
+{q:'رمز الماء؟',a:['H2O','CO2','O2','NaCl'],c:0},
+{q:'أوتار الجيتار؟',a:['4','5','6','7'],c:2},
+{q:'عاصمة اليونان؟',a:['أثينا','روما','باريس','برلين'],c:0},
+{q:'قلوب الأخطبوط؟',a:['1','3','5','7'],c:1},
+{q:'عاصمة كندا؟',a:['تورنتو','فانكوفر','أوتاوا','مونتريال'],c:2},
+{q:'عاصمة أستراليا؟',a:['سيدني','ملبورن','كانبرا','بيرث'],c:2},
+{q:'عاصمة البرازيل؟',a:['ريو','ساو باولو','برازيليا','سلفادور'],c:2},
+{q:'عاصمة الهند؟',a:['مومباي','نيودلهي','كولكاتا','تشيناي'],c:1},
+{q:'عدد القارات؟',a:['5','6','7','8'],c:2},
+{q:'كوكب أحمر؟',a:['الزهرة','المريخ','عطارد','زحل'],c:1},
+{q:'عاصمة روسيا؟',a:['سانت بطرسبرغ','موسكو','كازان','سوتشي'],c:1},
+{q:'دقيقة بالساعة؟',a:['50','60','70','80'],c:1},
+{q:'عاصمة النرويج؟',a:['أوسلو','ستوكهولم','كوبنهاجن','هلسنكي'],c:0},
+{q:'مؤلف روميو وجولييت؟',a:['ديكنز','شكسبير','تولستوي','هيمنجواي'],c:1},
+{q:'أطول رقبة؟',a:['الفيل','الجمل','الزرافة','الحصان'],c:2},
+{q:'عاصمة بولندا؟',a:['كراكوف','وارسو','جدانسك','بوزنان'],c:1},
+{q:'ثواني بالدقيقة؟',a:['50','60','70','80'],c:1},
+{q:'عاصمة الأرجنتين؟',a:['بوينس آيرس','ريو','ليما','سانتياغو'],c:0},
+{q:'أكبر صحراء؟',a:['الغربية','الكبرى','الصحراء الكبرى','الشرقية'],c:2},
+{q:'مؤسس مايكروسوفت؟',a:['ستيف جوبز','بيل جيتس','مارك زوكربرغ','إيلون ماسك'],c:1},
+{q:'عاصمة المكسيك؟',a:['غوادالاخارا','مكسيكو سيتي','كانكون','تيخوانا'],c:1},
+{q:'ألوان علم مصر؟',a:['2','3','4','5'],c:1},
+{q:'أطول نهر؟',a:['النيل','الأمازون','المسيسيبي','اليانغتسي'],c:0},
+{q:'عاصمة السويد؟',a:['أوسلو','ستوكهولم','كوبنهاجن','هلسنكي'],c:1},
+{q:'مخترع الهاتف؟',a:['إديسون','جراهام بيل','نيوتن','تسلا'],c:1},
+{q:'أسرع طائر؟',a:['النسر','الصقر','الشاهين','البومة'],c:2},
+{q:'عاصمة سويسرا؟',a:['زيوريخ','جنيف','برن','بازل'],c:2},
+{q:'حروف العربية؟',a:['26','28','29','30'],c:1},
+{q:'عاصمة البرتغال؟',a:['بورتو','لشبونة','فارو','كويمبرا'],c:1},
+{q:'أكبر قارة؟',a:['أفريقيا','آسيا','أوروبا','أمريكا'],c:1},
+{q:'أسرع حيوان بحري؟',a:['القرش','الدلفين','الحوت','السلحفاة'],c:1}
+];
+
+var ranks=[
+{name:'برونز',icon:'🥉',min:0,cls:'bronze'},
+{name:'فضة',icon:'🥈',min:500,cls:'silver'},
+{name:'ذهب',icon:'🥇',min:1000,cls:'gold'},
+{name:'ماسة',icon:'💎',min:1500,cls:'diamond'},
+{name:'أسطورة',icon:'👑',min:2000,cls:'legend'},
+{name:'متفوق',icon:'⚡',min:2500,cls:'supreme'},
+{name:'بارع',icon:'🌟',min:3000,cls:'bar2'},
+{name:'كونكر',icon:'🔥',min:3500,cls:'conq'}
+];
+
+var cc=0,wc=0,cur=0,list=[],locked=false,tm=0,tid=null;
+var total=0;
+try{var t=localStorage.getItem('gt');if(t)total=parseInt(t);}catch(e){}
+
+function getRank(p){var r=ranks[0];for(var i=0;i<ranks.length;i++){if(p>=ranks[i].min)r=ranks[i];}return r;}
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+function sound(f,d){try{var c=new(window.AudioContext||window.webkitAudioContext)();var o=c.createOscillator();var g=c.createGain();o.frequency.value=f;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.15,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.start();o.stop(c.currentTime+d);}catch(e){}}
+
+function show(id){
+var ids=['screen-home','screen-game','screen-result','screen-rank','screen-ranks'];
+for(var k=0;k<ids.length;k++)document.getElementById(ids[k]).classList.add('hid');
+document.getElementById(id).classList.remove('hid');
+}
+
+function updateRank(){
+var r=getRank(total);
+var b=document.getElementById('rankHome');
+if(b)b.textContent=r.icon+' '+r.name+' • '+total+' نقطة';
+}
+
+function goHome(){
+if(tid)clearInterval(tid);
+show('screen-home');
+updateRank();
+}
+
+function start(){
+cc=0;wc=0;cur=0;
+list=shuffle(qs).slice(0,15);
+show('screen-game');
+document.getElementById('sc').textContent='0';
+next();
+}
+
+function next(){
+if(cur>=list.length){end();return;}
+locked=false;
+var q=list[cur];
+document.getElementById('q').textContent='س '+(cur+1)+': '+q.q;
+document.getElementById('qn').textContent=(cur+1)+'/15';
+document.getElementById('m').textContent='';
+var h='';
+for(var i=0;i<q.a.length;i++){h+='<button onclick="ans('+i+')">'+q.a[i]+'</button>';}
+document.getElementById('a').innerHTML=h;
+tm=100;
+document.getElementById('tm').textContent='10';
+document.getElementById('tf').style.width='100%';
+if(tid)clearInterval(tid);
+tid=setInterval(tick,100);
+}
+
+function tick(){
+tm--;
+document.getElementById('tf').style.width=tm+'%';
+document.getElementById('tm').textContent=Math.ceil(tm/10);
+if(tm<=0){clearInterval(tid);if(!locked)timeup();}
+}
+
+function timeup(){
+locked=true;wc++;
+var q=list[cur];
+var bs=document.querySelectorAll('#a button');
+bs[q.c].className='c';
+for(var i=0;i<bs.length;i++)bs[i].disabled=true;
+document.getElementById('m').textContent='⏰ الوقت خلص!';
+document.getElementById('m').style.color='#e74c3c';
+sound(200,.3);
+setTimeout(function(){cur++;next();},1200);
+}
+
+function popConf(n){
+var em=['🎉','🎊','⭐','✨','🏆','💫','🌟','💎'];
+for(var k=0;k<n;k++){
+(function(k){
+setTimeout(function(){
+var c=document.createElement('div');
+c.className='conf';
+c.textContent=em[Math.floor(Math.random()*em.length)];
+c.style.left=(Math.random()*100)+'vw';
+c.style.animationDuration=(1.5+Math.random()*1.5)+'s';
+document.body.appendChild(c);
+setTimeout(function(){c.remove();},3500);
+},k*40);
+})(k);
+}
+}
+
+function showWinAnim(cb){
+var d=document.createElement('div');
+d.className='winAnim';
+d.innerHTML='<div class="winCircle">✅</div><div class="winTxt">صح!</div>';
+document.body.appendChild(d);
+popConf(25);
+sound(523,.1);
+setTimeout(function(){sound(659,.1);},100);
+setTimeout(function(){sound(784,.2);},200);
+setTimeout(function(){d.remove();if(cb)cb();},900);
+}
+
+function ans(i){
+if(locked)return;
+locked=true;
+clearInterval(tid);
+var q=list[cur];
+var bs=document.querySelectorAll('#a button');
+if(i===q.c){
+bs[i].className='c';
+for(var j=0;j<bs.length;j++)bs[j].disabled=true;
+showWinAnim(function(){
+cc++;
+document.getElementById('sc').textContent=cc;
+document.getElementById('m').textContent='✅ صح!';
+document.getElementById('m').style.color='#2ecc71';
+setTimeout(function(){cur++;next();},400);
+});
+}else{
+wc++;
+bs[i].className='w';
+bs[q.c].className='c';
+document.getElementById('m').textContent='❌ غلط!';
+document.getElementById('m').style.color='#e74c3c';
+sound(200,.3);
+for(var k=0;k<bs.length;k++)bs[k].disabled=true;
+setTimeout(function(){cur++;next();},1100);
+}
+}
+
+function calcPts(c){
+if(c<=5)return 0;
+if(c===6)return 10;
+if(c===7)return 20;
+if(c===8)return 50;
+if(c===9)return 80;
+if(c===10)return 110;
+if(c===11)return 140;
+if(c===12)return 170;
+if(c===13)return 190;
+return 200;
+}
+
+function end(){
+if(tid)clearInterval(tid);
+var pts=calcPts(cc);
+total+=pts;
+try{localStorage.setItem('gt',total);}catch(e){}
+var r=getRank(total);
+show('screen-result');
+document.getElementById('rc').textContent=cc;
+document.getElementById('rw').textContent=wc;
+document.getElementById('rres').textContent=(cc>=8?'✅ فوز':'❌ خسارة')+' ('+cc+'/15)';
+document.getElementById('rs').textContent=pts;
+document.getElementById('rt2').textContent=total;
+document.getElementById('rt').textContent=cc>=8?'🎉 فوز!':'😢 خسارة!';
+var rb=document.getElementById('rb');
+rb.className='rb '+r.cls;
+document.getElementById('ri').textContent=r.icon;
+document.getElementById('rn').textContent=r.name;
+popConf(cc>=8?50:20);
+sound(523,.15);
+setTimeout(function(){sound(659,.15);},150);
+setTimeout(function(){sound(784,.3);},300);
+}
+
+function showRank(){
+show('screen-rank');
+var players=[
+{name:'أحمد',score:1200},{name:'محمد',score:1000},{name:'سارة',score:850},
+{name:'علي',score:700},{name:'يوسف',score:550},{name:'عمر',score:450},
+{name:'خالد',score:350},{name:'نور',score:280},{name:'حمزة',score:180},{name:'رامي',score:100}
+];
+players.push({name:'أنت',score:total,m:true});
+players.sort(function(a,b){return b.score-a.score;});
+var h='';
+var md=['🥇','🥈','🥉'];
+for(var i=0;i<players.length;i++){
+var p=players[i];
+var c='rk';
+if(i<3)c+=' f';
+if(p.m)c+=' m';
+var rk=getRank(p.score);
+var medal=i<3?md[i]:(i+1);
+h+='<div class="'+c+'"><span style="font-size:20px;min-width:30px">'+medal+'</span><span style="flex:1;text-align:right;font-size:14px">'+p.name+'<br><span style="font-size:11px;opacity:.7">'+rk.icon+' '+rk.name+'</span></span><b style="color:#ffd93d">'+p.score+'</b></div>';
+}
+document.getElementById('rkl').innerHTML=h;
+}
+
+function showRanksList(){
+show('screen-ranks');
+var cr=getRank(total);
+var html='';
+for(var i=0;i<ranks.length;i++){
+var r=ranks[i];
+var isMe=(r.name===cr.name);
+var nextMin=(i<ranks.length-1)?ranks[i+1].min:999999;
+var st='';
+if(total>=r.min&&total<nextMin){st='⭐ أنت هنا';}
+else if(total>=nextMin){st='✅ تم';}
+else{st='🔒 باقي '+(r.min-total)+' نقطة';}
+html+='<div class="rb '+r.cls+'" style="padding:15px;margin:10px 0;'+(isMe?'border:3px solid #fff;':'')+'">';
+html+='<div style="display:flex;justify-content:space-between;align-items:center">';
+html+='<div style="font-size:45px">'+r.icon+'</div>';
+html+='<div style="flex:1;text-align:right;padding-right:12px">';
+html+='<div style="font-size:20px;font-weight:bold">'+r.name+'</div>';
+html+='<div style="font-size:13px;opacity:.9">'+r.min+' نقطة</div>';
+html+='</div>';
+html+='<div style="font-size:13px;font-weight:bold">'+st+'</div>';
+html+='</div></div>';
+}
+document.getElementById('ranksList').innerHTML=html;
+}
+
+updateRank();
+</script>
